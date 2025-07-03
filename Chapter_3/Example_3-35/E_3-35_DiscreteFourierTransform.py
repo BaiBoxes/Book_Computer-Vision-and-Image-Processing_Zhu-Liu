@@ -16,30 +16,37 @@
 ------------------------
 版权归属于：清华大学出版社 and 《计算机视觉与图像处理》作者
 ------------------------
-【例3-40】在一幅墙体裂缝图上进行膨胀操作，并将结果显示出来。
+【例3-35】将一幅图进行最优离散傅立叶变换，并显示出来。
 ------------------------
 """
 
 
 import cv2
-import matplotlib.pyplot as plt
+import numpy as np
+from matplotlib import pyplot as plt
 
 
-# 读取图像
-image = cv2.imread('image/Example-WallCracks.jpg', cv2.IMREAD_GRAYSCALE)
-# 二值化图像并翻转（将白色和黑色像素互换）
-ret, binary_image = cv2.threshold(image, 50, 255, cv2.THRESH_BINARY)
-binary_image = cv2.bitwise_not(binary_image)
-# 生成5x5的矩形核
-kernel = cv2.getStructuringElement(cv2.MORPH_RECT, (3,3))
-# 进行腐蚀操作
-dilation = cv2.dilate(binary_image, kernel, iterations=1)
-# 显示结果图像
-plt.subplot(131), plt.imshow(image, cmap='gray')
+# 读取灰度图像
+img = cv2.imread('image/Example-Bridge_gray.jpg', flags=cv2.IMREAD_GRAYSCALE)
+# 计算图像进行离散傅里叶变换时的最优转换大小
+h, w = img.shape[:2]
+dft_h = cv2.getOptimalDFTSize(h)
+dft_w = cv2.getOptimalDFTSize(w)
+# 边界扩充
+img_padded = cv2.copyMakeBorder(img,0,dft_h - h,0,dft_w - w, cv2.BORDER_CONSTANT, 0)
+# 进行离散傅里叶变换
+dft = cv2.dft(np.float32(img_padded), flags = cv2.DFT_COMPLEX_OUTPUT)
+# 将离散傅里叶变换结果移到中心
+dft_shift = np.fft.fftshift(dft)
+# 计算离散傅里叶变换的幅值谱
+magnitude_spectrum = 20*np.log(cv2.magnitude(dft_shift[:,:,0],dft_shift[:,:,1]))
+# 将原始图像和频谱都显示出来
+plt.figure(figsize=(9, 3))
+plt.subplot(121)
+plt.imshow(img, cmap='gray')
 plt.title('Original Image'), plt.xticks([]), plt.yticks([])
-plt.subplot(132), plt.imshow(binary_image, cmap='gray')
-plt.title('Binary Image'), plt.xticks([]), plt.yticks([])
-plt.subplot(133), plt.imshow(dilation, cmap='gray')
-plt.title('Dilation Result'), plt.xticks([]), plt.yticks([])
+plt.subplot(122)
+plt.imshow(magnitude_spectrum, cmap = 'gray')
+plt.title('Magnitude Spectrum'), plt.xticks([]), plt.yticks([])
 plt.tight_layout()
 plt.show()

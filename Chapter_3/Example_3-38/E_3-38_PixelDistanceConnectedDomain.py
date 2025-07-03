@@ -16,7 +16,7 @@
 ------------------------
 版权归属于：清华大学出版社 and 《计算机视觉与图像处理》作者
 ------------------------
-【例3-40】在一幅墙体裂缝图上进行膨胀操作，并将结果显示出来。
+【例3-38】在一幅墙体裂缝图上进行距离变换与连通域分析，并将结果显示出来。
 ------------------------
 """
 
@@ -27,19 +27,30 @@ import matplotlib.pyplot as plt
 
 # 读取图像
 image = cv2.imread('image/Example-WallCracks.jpg', cv2.IMREAD_GRAYSCALE)
-# 二值化图像并翻转（将白色和黑色像素互换）
+# 二值化图像
 ret, binary_image = cv2.threshold(image, 50, 255, cv2.THRESH_BINARY)
-binary_image = cv2.bitwise_not(binary_image)
-# 生成5x5的矩形核
-kernel = cv2.getStructuringElement(cv2.MORPH_RECT, (3,3))
-# 进行腐蚀操作
-dilation = cv2.dilate(binary_image, kernel, iterations=1)
+# 计算欧几里得距离变换
+distance_transform_euclidean = cv2.distanceTransform(binary_image, cv2.DIST_L2, 5)
+# 计算曼哈顿距离变换
+distance_transform_manhattan = cv2.distanceTransform(binary_image, cv2.DIST_L1, 5)
+# 计算切比雪夫距离变换
+distance_transform_chebyshev = cv2.distanceTransform(binary_image, cv2.DIST_C, 5)
+# 二值化图像并翻转（将白色和黑色像素互换）
+labeled_image = cv2.bitwise_not(binary_image)
+# 进行连通域分析
+num_labels, labels, stats, centroids = cv2.connectedComponentsWithStats(labeled_image, ltype=cv2.CV_16U)
 # 显示结果图像
-plt.subplot(131), plt.imshow(image, cmap='gray')
+plt.subplot(231), plt.imshow(image, cmap='gray')
 plt.title('Original Image'), plt.xticks([]), plt.yticks([])
-plt.subplot(132), plt.imshow(binary_image, cmap='gray')
+plt.subplot(232), plt.imshow(binary_image, cmap='gray')
 plt.title('Binary Image'), plt.xticks([]), plt.yticks([])
-plt.subplot(133), plt.imshow(dilation, cmap='gray')
-plt.title('Dilation Result'), plt.xticks([]), plt.yticks([])
+plt.subplot(233), plt.imshow(distance_transform_euclidean, cmap='jet')
+plt.title('Euclidean Distance'), plt.xticks([]), plt.yticks([])
+plt.subplot(234), plt.imshow(distance_transform_manhattan, cmap='jet')
+plt.title('Manhattan Distance'), plt.xticks([]), plt.yticks([])
+plt.subplot(235), plt.imshow(distance_transform_chebyshev, cmap='jet')
+plt.title('Chebyshev Distance'), plt.xticks([]), plt.yticks([])
+plt.subplot(236), plt.imshow(labels, cmap='gray')
+plt.title('Connected Components'), plt.xticks([]), plt.yticks([])
 plt.tight_layout()
 plt.show()

@@ -32,7 +32,7 @@ ret, binary_image = cv2.threshold(image, 50, 255, cv2.THRESH_BINARY)
 binary_image = cv2.bitwise_not(binary_image)
 # 生成5x5的矩形核
 kernel = cv2.getStructuringElement(cv2.MORPH_RECT, (3,3))
-# 进行腐蚀操作
+# 进行膨胀操作
 dilation = cv2.dilate(binary_image, kernel, iterations=1)
 # 显示结果图像
 plt.subplot(131), plt.imshow(image, cmap='gray')

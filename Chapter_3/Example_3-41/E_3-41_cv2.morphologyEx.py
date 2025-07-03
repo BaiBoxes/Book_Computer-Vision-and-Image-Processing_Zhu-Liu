@@ -16,7 +16,8 @@
 ------------------------
 版权归属于：清华大学出版社 and 《计算机视觉与图像处理》作者
 ------------------------
-【例3-40】在一幅墙体裂缝图上进行膨胀操作，并将结果显示出来。
+【例3-41】在一幅墙体裂缝图上用cv2.morphologyEx函数进行腐蚀操作、膨胀操作、形态学开运算、
+        形态学闭运算、形态学梯度运算、形态学顶帽运算、形态学黑帽运算与击中击不中变换，并将结果显示出来。
 ------------------------
 """
 
@@ -32,14 +33,32 @@ ret, binary_image = cv2.threshold(image, 50, 255, cv2.THRESH_BINARY)
 binary_image = cv2.bitwise_not(binary_image)
 # 生成5x5的矩形核
 kernel = cv2.getStructuringElement(cv2.MORPH_RECT, (3,3))
-# 进行腐蚀操作
-dilation = cv2.dilate(binary_image, kernel, iterations=1)
-# 显示结果图像
-plt.subplot(131), plt.imshow(image, cmap='gray')
-plt.title('Original Image'), plt.xticks([]), plt.yticks([])
-plt.subplot(132), plt.imshow(binary_image, cmap='gray')
-plt.title('Binary Image'), plt.xticks([]), plt.yticks([])
-plt.subplot(133), plt.imshow(dilation, cmap='gray')
-plt.title('Dilation Result'), plt.xticks([]), plt.yticks([])
+# 腐蚀
+erosion = cv2.morphologyEx(binary_image, cv2.MORPH_ERODE, kernel)
+# 膨胀
+dilation = cv2.morphologyEx(binary_image, cv2.MORPH_DILATE, kernel)
+# 开运算
+opening = cv2.morphologyEx(binary_image, cv2.MORPH_OPEN, kernel)
+# 闭运算
+closing = cv2.morphologyEx(binary_image, cv2.MORPH_CLOSE, kernel)
+# 梯度运算
+gradient = cv2.morphologyEx(binary_image, cv2.MORPH_GRADIENT, kernel)
+# 顶帽运算
+tophat = cv2.morphologyEx(binary_image, cv2.MORPH_TOPHAT, kernel)
+# 黑帽运算
+blackhat = cv2.morphologyEx(binary_image, cv2.MORPH_BLACKHAT, kernel)
+# 击中击不中变换
+hitmiss = cv2.morphologyEx(binary_image, cv2.MORPH_HITMISS, kernel)
+# 显示结果
+titles = ['Original Image', 'Binary Image', 'Erosion Image', 'Dilation Image', 'Opening Image',
+          'Closing Image', 'Gradient Image', 'TopHat Image', 'BlackHat Image', 'HitMiss Image']
+images = [image, binary_image, erosion, dilation, opening,
+          closing, gradient, tophat, blackhat, hitmiss]
+for i in range(2):
+    plt.subplot(3, 4, i + 2), plt.imshow(images[i], 'gray')
+    plt.title(titles[i]), plt.xticks([]), plt.yticks([])
+for i in range(2, 10):
+    plt.subplot(3, 4, i + 3), plt.imshow(images[i], 'gray')
+    plt.title(titles[i]), plt.xticks([]), plt.yticks([])
 plt.tight_layout()
 plt.show()

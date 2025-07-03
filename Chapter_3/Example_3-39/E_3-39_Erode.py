@@ -16,7 +16,7 @@
 ------------------------
 版权归属于：清华大学出版社 and 《计算机视觉与图像处理》作者
 ------------------------
-【例3-40】在一幅墙体裂缝图上进行膨胀操作，并将结果显示出来。
+【例3-39】在一幅墙体裂缝图上进行腐蚀操作，并将结果显示出来。
 ------------------------
 """
 
@@ -33,13 +33,13 @@ binary_image = cv2.bitwise_not(binary_image)
 # 生成5x5的矩形核
 kernel = cv2.getStructuringElement(cv2.MORPH_RECT, (3,3))
 # 进行腐蚀操作
-dilation = cv2.dilate(binary_image, kernel, iterations=1)
+erosion = cv2.erode(binary_image, kernel, iterations=1)
 # 显示结果图像
 plt.subplot(131), plt.imshow(image, cmap='gray')
 plt.title('Original Image'), plt.xticks([]), plt.yticks([])
 plt.subplot(132), plt.imshow(binary_image, cmap='gray')
 plt.title('Binary Image'), plt.xticks([]), plt.yticks([])
-plt.subplot(133), plt.imshow(dilation, cmap='gray')
-plt.title('Dilation Result'), plt.xticks([]), plt.yticks([])
+plt.subplot(133), plt.imshow(erosion, cmap='gray')
+plt.title('Erosion Image'), plt.xticks([]), plt.yticks([])
 plt.tight_layout()
 plt.show()

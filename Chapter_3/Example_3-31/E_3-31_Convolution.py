@@ -16,30 +16,30 @@
 ------------------------
 版权归属于：清华大学出版社 and 《计算机视觉与图像处理》作者
 ------------------------
-【例3-40】在一幅墙体裂缝图上进行膨胀操作，并将结果显示出来。
+【例3-31】随机生成5×5的卷积核，然后用cv2.filter2D函数对图像进行互相关操作与卷积操作，并显示结果。
 ------------------------
 """
 
 
 import cv2
-import matplotlib.pyplot as plt
+import numpy as np
 
 
+# 创建一个随机5x5的卷积核
+random_kernel = np.random.rand(5, 5)
+random_kernel = random_kernel / np.sum(random_kernel)
+# 打印生成的卷积核
+print("随机生成的卷积核：")
+print(random_kernel)
 # 读取图像
-image = cv2.imread('image/Example-WallCracks.jpg', cv2.IMREAD_GRAYSCALE)
-# 二值化图像并翻转（将白色和黑色像素互换）
-ret, binary_image = cv2.threshold(image, 50, 255, cv2.THRESH_BINARY)
-binary_image = cv2.bitwise_not(binary_image)
-# 生成5x5的矩形核
-kernel = cv2.getStructuringElement(cv2.MORPH_RECT, (3,3))
-# 进行腐蚀操作
-dilation = cv2.dilate(binary_image, kernel, iterations=1)
-# 显示结果图像
-plt.subplot(131), plt.imshow(image, cmap='gray')
-plt.title('Original Image'), plt.xticks([]), plt.yticks([])
-plt.subplot(132), plt.imshow(binary_image, cmap='gray')
-plt.title('Binary Image'), plt.xticks([]), plt.yticks([])
-plt.subplot(133), plt.imshow(dilation, cmap='gray')
-plt.title('Dilation Result'), plt.xticks([]), plt.yticks([])
-plt.tight_layout()
-plt.show()
+image = cv2.imread('image/Example-Bridge_gray.jpg')
+# 对图像执行互相关操作
+correlation_result = cv2.filter2D(image, -1, random_kernel)
+# 对图像执行卷积操作
+convolution_result = cv2.filter2D(image, -1, cv2.flip(random_kernel, -1))
+# 显示原始图像、互相关结果和卷积结果
+cv2.imshow('Original Image', image)
+cv2.imshow('Correlation Result', correlation_result)
+cv2.imshow('Convolution Result', convolution_result)
+cv2.waitKey(0)
+cv2.destroyAllWindows()

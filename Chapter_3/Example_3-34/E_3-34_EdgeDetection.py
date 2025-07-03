@@ -16,30 +16,49 @@
 ------------------------
 版权归属于：清华大学出版社 and 《计算机视觉与图像处理》作者
 ------------------------
-【例3-40】在一幅墙体裂缝图上进行膨胀操作，并将结果显示出来。
+【例3-34】在一幅图上分别用Sobel算子、Scharr算子、Laplacian算子与Canny算法进行边缘检测，然后显示出边缘结果并分析。
 ------------------------
 """
 
 
 import cv2
+import numpy as np
 import matplotlib.pyplot as plt
 
 
 # 读取图像
-image = cv2.imread('image/Example-WallCracks.jpg', cv2.IMREAD_GRAYSCALE)
-# 二值化图像并翻转（将白色和黑色像素互换）
-ret, binary_image = cv2.threshold(image, 50, 255, cv2.THRESH_BINARY)
-binary_image = cv2.bitwise_not(binary_image)
-# 生成5x5的矩形核
-kernel = cv2.getStructuringElement(cv2.MORPH_RECT, (3,3))
-# 进行腐蚀操作
-dilation = cv2.dilate(binary_image, kernel, iterations=1)
-# 显示结果图像
-plt.subplot(131), plt.imshow(image, cmap='gray')
-plt.title('Original Image'), plt.xticks([]), plt.yticks([])
-plt.subplot(132), plt.imshow(binary_image, cmap='gray')
-plt.title('Binary Image'), plt.xticks([]), plt.yticks([])
-plt.subplot(133), plt.imshow(dilation, cmap='gray')
-plt.title('Dilation Result'), plt.xticks([]), plt.yticks([])
+image = cv2.imread('image/Example-Bridge_gray.jpg', cv2.IMREAD_GRAYSCALE)
+# 边缘检测使用Sobel算子
+sobel_x = cv2.Sobel(image, cv2.CV_64F, 1, 0, ksize=3)
+sobel_y = cv2.Sobel(image, cv2.CV_64F, 0, 1, ksize=3)
+sobel = np.sqrt(sobel_x**2 + sobel_y**2)
+sobel = cv2.convertScaleAbs(sobel)  # 转换为uint8
+# 边缘检测使用Scharr算子
+scharr_x = cv2.Scharr(image, cv2.CV_64F, 1, 0)
+scharr_y = cv2.Scharr(image, cv2.CV_64F, 0, 1)
+scharr = np.sqrt(scharr_x**2 + scharr_y**2)
+scharr = cv2.convertScaleAbs(scharr)  # 转换为uint8
+# 边缘检测使用Laplacian算子
+laplacian = cv2.Laplacian(image, cv2.CV_64F, ksize=3)
+laplacian = cv2.convertScaleAbs(laplacian)  # 转换为uint8
+# 边缘检测使用Canny算法
+canny = cv2.Canny(image, 100, 200)
+# 显示各种边缘检测结果
+plt.figure(figsize=(12, 6))
+plt.subplot(231)
+plt.imshow(image, cmap='gray')
+plt.title('Original Image')
+plt.subplot(232)
+plt.imshow(sobel, cmap='gray')
+plt.title('Sobel Edge Detection')
+plt.subplot(233)
+plt.imshow(scharr, cmap='gray')
+plt.title('Scharr Edge Detection')
+plt.subplot(234)
+plt.imshow(laplacian, cmap='gray')
+plt.title('Laplacian Edge Detection')
+plt.subplot(235)
+plt.imshow(canny, cmap='gray')
+plt.title('Canny Edge Detection')
 plt.tight_layout()
 plt.show()

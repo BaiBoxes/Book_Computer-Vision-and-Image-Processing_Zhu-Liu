@@ -16,30 +16,42 @@
 ------------------------
 版权归属于：清华大学出版社 and 《计算机视觉与图像处理》作者
 ------------------------
-【例3-40】在一幅墙体裂缝图上进行膨胀操作，并将结果显示出来。
+【例3-36】将一幅图通过傅里叶变换，实现卷积，并显示出来。
 ------------------------
 """
 
 
 import cv2
+import numpy as np
 import matplotlib.pyplot as plt
 
 
 # 读取图像
-image = cv2.imread('image/Example-WallCracks.jpg', cv2.IMREAD_GRAYSCALE)
-# 二值化图像并翻转（将白色和黑色像素互换）
-ret, binary_image = cv2.threshold(image, 50, 255, cv2.THRESH_BINARY)
-binary_image = cv2.bitwise_not(binary_image)
-# 生成5x5的矩形核
-kernel = cv2.getStructuringElement(cv2.MORPH_RECT, (3,3))
-# 进行腐蚀操作
-dilation = cv2.dilate(binary_image, kernel, iterations=1)
-# 显示结果图像
-plt.subplot(131), plt.imshow(image, cmap='gray')
+img = cv2.imread('image/Example-Bridge_gray.jpg', cv2.IMREAD_GRAYSCALE)
+# 卷积核
+kernel = np.ones((5,5),np.float32)/25
+# 计算傅里叶变换的最优大小
+dft_h = cv2.getOptimalDFTSize(img.shape[0])
+dft_w = cv2.getOptimalDFTSize(img.shape[1])
+# 扩展图像
+img_padded = cv2.copyMakeBorder(img, 0, dft_h - img.shape[0], 0, dft_w - img.shape[1], cv2.BORDER_CONSTANT, 0)
+# 扩展核
+kernel_padded = cv2.copyMakeBorder(kernel, 0, dft_h - kernel.shape[0], 0, dft_w - kernel.shape[1], cv2.BORDER_CONSTANT, 0)
+# 傅里叶变换
+dft_img = cv2.dft(np.float32(img_padded), flags = cv2.DFT_COMPLEX_OUTPUT)
+dft_kernel = cv2.dft(np.float32(kernel_padded), flags = cv2.DFT_COMPLEX_OUTPUT)
+# 频域中点乘
+dft_img_conv = cv2.mulSpectrums(dft_img, dft_kernel, cv2.DFT_COMPLEX_OUTPUT)
+# 逆变换
+img_conv = cv2.idft(dft_img_conv)
+img_conv = cv2.magnitude(img_conv[:,:,0],img_conv[:,:,1])
+# 将原始图像和卷积后图像都显示出来
+plt.figure(figsize=(9, 3))
+plt.subplot(121)
+plt.imshow(img, cmap='gray')
 plt.title('Original Image'), plt.xticks([]), plt.yticks([])
-plt.subplot(132), plt.imshow(binary_image, cmap='gray')
-plt.title('Binary Image'), plt.xticks([]), plt.yticks([])
-plt.subplot(133), plt.imshow(dilation, cmap='gray')
-plt.title('Dilation Result'), plt.xticks([]), plt.yticks([])
+plt.subplot(122)
+plt.imshow(img_conv, cmap = 'gray')
+plt.title('Convolution Image'), plt.xticks([]), plt.yticks([])
 plt.tight_layout()
 plt.show()
