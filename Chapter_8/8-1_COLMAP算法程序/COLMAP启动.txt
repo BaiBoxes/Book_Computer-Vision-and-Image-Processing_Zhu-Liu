@@ -1,0 +1,2 @@
+COLMAP的开源算法程序，位于本文件夹下的"COLMAP-3.6-windows-cuda.zip"压缩包。
+请解压后，点击“COLMAP.bat”，进入GUI界面，按照课本相关内容进行使用。
