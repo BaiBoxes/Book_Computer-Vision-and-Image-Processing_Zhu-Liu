@@ -16,7 +16,7 @@
 ------------------------
 版权归属于：清华大学出版社 and 《计算机视觉与图像处理》作者
 ------------------------
-【例10-5】随机生成包含两类像素的yml文件，并使用支持向量机算法，最后直观的展示分类预测结果。
+【例9-5】随机生成包含两类像素的yml文件，并使用支持向量机算法，最后直观的展示分类预测结果。
 """
 
 
@@ -74,7 +74,7 @@ svm.setTermCriteria((cv2.TERM_CRITERIA_MAX_ITER, 100, 1e-6))
 svm.train(data, cv2.ml.ROW_SAMPLE, labels)
 
 # 保存训练好的 SVM 模型到 'svm_model.yml'
-svm.save('./Chapter_9/Example_9-5/results/svm_model.yml')
+svm.save('./results/svm_model.yml')
 print('模型训练完成并已保存。')
 
 # 用模型对图像中的全部像素进行分类
