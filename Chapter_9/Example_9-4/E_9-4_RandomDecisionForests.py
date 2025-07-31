@@ -16,7 +16,7 @@
 ------------------------
 版权归属于：清华大学出版社 and 《计算机视觉与图像处理》作者
 ------------------------
-【例10-4】使用随机森林算法对2000张几何形状图像进行分类训练和预测，最后直观的展示分类的准确率和预测结果。
+【例9-4】使用随机森林算法对2000张几何形状图像进行分类训练和预测，最后直观的展示分类的准确率和预测结果。
 """
 
 
@@ -62,7 +62,7 @@ rt.setActiveVarCount(4)
 rt.train(train_data, cv2.ml.ROW_SAMPLE, train_labels)
 
 # 保存模型到result文件夹
-rt.save('./Chapter_9/Example_9-4/results/rtrees_model.xml')
+rt.save('./results/rtrees_model.xml')
 print('模型训练完成并已保存。')
 
 # 计算训练准确率
@@ -73,7 +73,7 @@ train_accuracy = train_correct * 100.0 / len(train_results)
 print(f'RTrees模型训练的准确率为{train_accuracy:.2f}%')
 
 # 加载模型进行预测
-loaded_rt = cv2.ml.RTrees_load('./Chapter_9/Example_9-4/results/rtrees_model.xml')
+loaded_rt = cv2.ml.RTrees_load('./results/rtrees_model.xml')
 
 # 准备测试数据
 test_data, test_labels, filenames = load_images('image\\Learn\\predict_image')
