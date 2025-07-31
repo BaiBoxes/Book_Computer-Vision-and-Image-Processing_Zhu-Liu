@@ -16,7 +16,7 @@
 ------------------------
 版权归属于：清华大学出版社 and 《计算机视觉与图像处理》作者
 ------------------------
-【例10-2】使用k近邻算法对train_image文件夹中的形状图片进行训练，再对predict_image文件夹中的图片进行预测，最后直观的展示结果和模型的准确率。
+【例9-2】使用k近邻算法对train_image文件夹中的形状图片进行训练，再对predict_image文件夹中的图片进行预测，最后直观的展示结果和模型的准确率。
 """
 
 
@@ -70,14 +70,14 @@ if mode == 'train':
     knn.train(train_data, cv2.ml.ROW_SAMPLE, train_labels)
 
     # 保存训练模型和数据
-    cv2.imwrite('./Chapter_9/Example_9-2/results/train_data.png', train_data)
-    cv2.imwrite('./Chapter_9/Example_9-2/results/train_labels.png', train_labels)
-    knn.save('./Chapter_9/Example_9-2/results/knn_model.yml')
+    cv2.imwrite('./results/train_data.png', train_data)
+    cv2.imwrite('./results/train_labels.png', train_labels)
+    knn.save('./results/knn_model.yml')
     print('模型训练完成并已保存。')
 
 elif mode == 'predict':
     # 加载KNN模型
-    knn = cv2.ml.KNearest_load('./Chapter_9/Example_9-2/results/knn_model.yml')
+    knn = cv2.ml.KNearest_load('./results/knn_model.yml')
 
     # 加载预测数据
     test_images, test_labels, filenames = load_images('image\\Learn\\predict_image')
@@ -97,7 +97,7 @@ elif mode == 'predict':
     correct_count = 0
     for i in range(len(results)):
         predicted_label = int(results[i][0])
-        actual_label = int(test_labels[i][0])
+        actual_label = int(test_labels[i])
 
         # 更新每种类别的统计信息
         category_stats[actual_label]['total'] += 1
