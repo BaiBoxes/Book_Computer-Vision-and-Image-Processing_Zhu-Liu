@@ -1,3 +1,24 @@
+# -*- coding: utf-8 -*-
+"""
+------------------------
+版权声明：
+本书内部包含的代码示例、算法和技术解释是受到知识产权法律保护的。
+这些代码示例和相关内容仅用于学习和教育目的，以帮助读者更好地理解书中的概念和知识。
+版权归属于书籍的作者或权利人所有。
+    这些代码示例和技术解释的使用受到以下限制：
+        代码示例仅用于学习和教育用途。读者可以结合书籍内容，在非商业的环境中使用这些代码示例，进行学习、实验和练习。
+        代码示例不得用于商业用途，包括但不限于出售、分发以获取利润、嵌入商业软件或产品中。
+        如需使用、修改和分发代码示例，其根据GNU Affero通用公共许可证(AGPL)3.0版本授权，请遵循源代码可用性与网络互动条款。
+        任何对代码示例的修改、衍生或重新分发，应该在适当的情况下保留原作者的权利声明，并在代码中进行明确标注。
+        代码示例和技术解释的使用不得侵犯任何第三方的知识产权，包括但不限于专利、商标、版权等。
+        本书作者和出版社对于读者因使用这些代码示例导致的任何损失或风险概不负责。
+请尊重知识产权，遵守以上声明，合理使用本书中的代码示例和相关内容。
+------------------------
+版权归属于：清华大学出版社 and 《计算机视觉与图像处理》作者
+------------------------
+【例9-9】使用PyTorch实现和训练一个简单的生成对抗网络（GAN）来生成MNIST数据集中的手写数字，并显示结果。
+"""
+
 import argparse
 import os
 import numpy as np
@@ -11,11 +32,11 @@ import torch
 
 # 创建文件夹
 # 记录训练过程的图片效果
-os.makedirs("Chapter_9/Example_9-9/results/images/", exist_ok=True)
+os.makedirs("./results/images/", exist_ok=True)
 # 训练完成时模型保存的位置
-os.makedirs("Chapter_9/Example_9-9/results/save/", exist_ok=True) 
+os.makedirs("./results/save/", exist_ok=True) 
 # 下载数据集存放的位置
-os.makedirs("Chapter_9/Example_9-9/datasets/mnist", exist_ok=True)
+os.makedirs("./datasets/mnist", exist_ok=True)
 
 # 超参数配置
 parser = argparse.ArgumentParser()
@@ -41,7 +62,7 @@ cuda = True if torch.cuda.is_available() else False
 
 # mnist数据集下载
 mnist = datasets.MNIST(
-    root='Chapter_9/Example_9-9/datasets/', train=True, download=True, transform=transforms.Compose(
+    root='./datasets/', train=True, download=True, transform=transforms.Compose(
             [transforms.Resize(opt.img_size), transforms.ToTensor(), transforms.Normalize([0.5], [0.5])]
         ), 
 )
@@ -152,8 +173,8 @@ for epoch in range(opt.n_epochs):                               ## epoch:50
 
         # 保存每500个batch生成的图片
         if i % opt.sample_interval == 0:
-            save_image(fake_img.data, f"Chapter_9/Example_9-9/results/images/{epoch * len(dataloader) + i}.png", nrow=8, normalize=True)
+            save_image(fake_img.data, f"./results/images/{epoch * len(dataloader) + i}.png", nrow=8, normalize=True)
 
 # 保存模型（生成器与判别器）
-torch.save(generator.state_dict(), 'Chapter_9/Example_9-9/results/save/generator.pth')
-torch.save(discriminator.state_dict(), 'Chapter_9/Example_9-9/results/save/discriminator.pth') 
+torch.save(generator.state_dict(), './results/save/generator.pth')
+torch.save(discriminator.state_dict(), './results/save/discriminator.pth') 
