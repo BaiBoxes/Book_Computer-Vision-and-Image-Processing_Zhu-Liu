@@ -1,1 +1,4 @@
 \#第1章 filter=lfs diff=lfs merge=lfs -text
+\#第4章 filter=lfs diff=lfs merge=lfs -text
+\#第5章 filter=lfs diff=lfs merge=lfs -text
+\#第9章 filter=lfs diff=lfs merge=lfs -text

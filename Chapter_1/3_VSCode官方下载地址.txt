@@ -1,0 +1,4 @@
+Visual Studio Code 官方下载地址（2024）：
+	https://code.visualstudio.com/Download
+
+注意地址过期！

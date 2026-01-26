@@ -1,0 +1,49 @@
+# Ultralytics YOLO 🚀, AGPL-3.0 license
+# YOLOv8 object detection model with P3-P5 outputs. For Usage examples see https://docs.ultralytics.com/tasks/detect
+
+# Parameters
+nc: 80 # number of classes
+scales: # model compound scaling constants, i.e. 'model=yolov8n.yaml' will call yolov8.yaml with scale 'n'
+  # [depth, width, max_channels]
+  n: [0.33, 0.25, 1024] # YOLOv8n summary: 225 layers,  3157200 parameters,  3157184 gradients,   8.9 GFLOPs
+  s: [0.33, 0.50, 1024] # YOLOv8s summary: 225 layers, 11166560 parameters, 11166544 gradients,  28.8 GFLOPs
+  m: [0.67, 0.75, 768] # YOLOv8m summary: 295 layers, 25902640 parameters, 25902624 gradients,  79.3 GFLOPs
+  l: [1.00, 1.00, 512] # YOLOv8l summary: 365 layers, 43691520 parameters, 43691504 gradients, 165.7 GFLOPs
+  x: [1.00, 1.25, 512] # YOLOv8x summary: 365 layers, 68229648 parameters, 68229632 gradients, 258.5 GFLOPs
+
+# YOLOv8.0n backbone
+backbone:         #backbone用于提取图像特征，为目标检测任务提供基础特征表示
+  # [from, repeats, module, args]
+  - [-1, 1, Conv, [64, 3, 2]] # 0-P1/2          第0层：使用64个3x3的卷积核，步幅为2进行卷积，得到P1/2特征图
+  - [-1, 1, Conv, [128, 3, 2]] # 1-P2/4         第1层:使用128个3x3的卷积核，步幅为2进行卷积，得到P2/4特征图
+  - [-1, 3, C2f, [128, True]]                  #第2层:进行3次C2f操作，每次操作使用128个通道，最后一次操作使用降维(True)。
+  - [-1, 1, Conv, [256, 3, 2]] # 3-P3/8         第3层:使用256个3x3的卷积核，步幅为2进行卷积，，得到P3/8特征图。
+  - [-1, 6, C2f, [256, True]]                  #第4层:进行6次C2f操作，每次操作使用256个通道，最后一次操作使用降维(True)。
+  - [-1, 1, Conv, [512, 3, 2]] # 5-P4/16        第5层:使用512个3x3的卷积核，步幅为2进行卷积，，得到P4/16特征图。
+  - [-1, 6, C2f, [512, True]]                  #第6层:进行6次C2f操作，每次操作使用512个通道，最后一次操作使用降维(True)。
+  - [-1, 1, Conv, [1024, 3, 2]] # 7-P5/32       第7层:使用1024个3x3的卷积核，步幅为2进行卷积，得到P5/32特征图。
+  - [-1, 3, C2f, [1024, True]]                 #第8层:进行3次C2f操作，每次操作使用1024个通道，最后一次操作使用降维(True)
+  - [-1, 1, SPPF, [1024, 5]] # 9                第9层:使用1024个通道的SRRE(空间金字塔池化)层，使用5个不同大小的池化核进行池化操作
+
+# YOLOv8.0n head    用于生成目标检测结
+head:
+  - [-1, 1, nn.Upsample, [None, 2, "nearest"]]       #第0层:使用最近邻上采样(nn.upsample)将特征图尺寸放大两倍。
+  - [[-1, 6], 1, Concat, [1]] # cat backbone P4      将backbone提取的P4特征图与当前特征图进行拼接(Concat)，生成新的特征图
+  - [-1, 3, C2f, [512]] # 12                         第2层:进行3次C2f操作，使用512个通道，得到第12个特征图:
+
+  - [-1, 1, nn.Upsample, [None, 2, "nearest"]]       #第3层:使用最近邻上采样将特征图尺寸放大两倍
+  - [[-1, 4], 1, Concat, [1]] # cat backbone P3      #第4层:将backbone提取的P3特征图与当前特征图进行拼接，生成新的特征图。
+  - [-1, 3, C2f, [256]] # 15 (P3/8-small)            第5层:进行3次C2f操作，使用256个通道，得到第15个特征图(P3/8-small)。
+
+  - [-1, 1, Conv, [256, 3, 2]]                     #第6层:便用256个3x3的卷积核，步幅为2进行卷积，得到第18个特征图(P4/16-medium)
+  - [[-1, 12], 1, Concat, [1]] # cat head P4
+  - [-1, 3, C2f, [512]] # 18 (P4/16-medium)
+
+  - [-1, 1, Conv, [512, 3, 2]]                       #第8层:进行3次C2f操作，使用512个通道，得到第21个特征图(P5/32-large)。
+  - [[-1, 9], 1, Concat, [1]] # cat head P5
+  - [-1, 3, C2f, [1024]] # 21 (P5/32-large)
+
+  - [[15, 18, 21], 1, Detect, [nc]] # Detect(P3, P4, P5)  Detect(P3，P4，P5)第9层:将第15、18和21个特征图进行拼接，使用Detect操作生成最终的检测结果
+
+# head部分通过逐层上采样和特征拼接的方式，融合不同尺度的特征信息，以提高目标检测的准确性和召回率。
+# 最后的Detect操作将利用这些特征图来预测目标的位置和类别，并生成检测结果，

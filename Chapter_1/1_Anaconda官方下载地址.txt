@@ -1,0 +1,7 @@
+Anaconda官方下载地址（2024）：
+	https://www.anaconda.com/download/success
+
+Anaconda_清华大学开源软件镜像站_下载地址:
+	https://mirrors.tuna.tsinghua.edu.cn/anaconda/archive/
+
+Anaconda官方如下载速度慢可用镜像站下载，注意地址过期！
